@@ -110,7 +110,7 @@ Possible error messages (sent via email if any errors appear):
 
                      28.06.24 - 01:58
 
-       Speicherplatz:.................37% | CHECK!
+       Speicherplatz:.....................37% | OK
        Webservices:.............................OK
        Anzahl Logfiles:.........................OK
        Groesse Logfiles:........................OK
