@@ -98,7 +98,7 @@ for ws in "${webservices[@]}"; do
     status=$(systemctl is-active "$ws")
     if [ "$status" != "active" ]; then
         ws_stat="ERROR"
-        ws_err="${ws_err}$(printf "       | %-16s...................!DOWN!" "$ws")\n"   
+        ws_err="${ws_err}$(printf "       | %-19s................!DOWN!" "$ws")\n"   
     fi
 done
 
