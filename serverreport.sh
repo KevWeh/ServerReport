@@ -134,7 +134,7 @@ for sizelogs in "${logs[@]}"; do
 
             if [ "$logsize" -gt 10485760 ]; then
                 logsi_stat="ERROR"
-                logsi_err="${logsi_err}$(printf "       | %-30s........$logsize_h" "$(basename "$logfile")")\n"
+                logsi_err="${logsi_err}$(printf "       | %-32s......$logsize_h" "$(basename "$logfile")")\n"
             fi
         fi
     done
