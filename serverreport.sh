@@ -48,15 +48,15 @@ clear
     pl70="${asc}_pl7070"
     ascw="ascwatchdog"
 #   Webservice Status:
-    ws_stat="OK"
-    ws_err=""
+    webservice_status="OK"
+    webservice_error=""
 #   Logpath:
-    lopa=/var/log/asc/
+    logfilepath=/var/log/asc/
 #   Logfiles Status:
-    logct_stat="OK"
-    logct_err=""
-    logsi_stat="OK"
-    logsi_err=""
+    logcounter_status="OK"
+    logcounter_error=""
+    logsize_status="OK"
+    logsize_error=""
 
 # Arrays:
 #   Webservices:
@@ -97,54 +97,54 @@ fi
 for ws in "${webservices[@]}"; do
     status=$(systemctl is-active "$ws")
     if [ "$status" != "active" ]; then
-        ws_stat="ERROR"
-        ws_err="${ws_err}$(printf "       | %-19s................!DOWN!" "$ws")\n"   
+        webservice_status="ERROR"
+        webservice_error="${webservice_error}$(printf "       | %-19s................!DOWN!" "$ws")\n"   
     fi
 done
 
-if [ "$ws_stat" == "OK" ]; then
+if [ "$webservice_status" == "OK" ]; then
     echo "       Webservices:.............................OK" >> $file
 else
     echo "       Webservices:..........................ERROR" >> $file
-    echo -e "$ws_err" >> $file
+    echo -e "$webservice_error" >> $file
 fi
 
 # Counter Logfiles:
 for logct in "${logs[@]}"; do
-    counter=$(find $lopa -name "$logct" | wc -l)
+    counter=$(find $logfilepath -name "$logct" | wc -l)
     if [ "$counter" -gt "10" ]; then
-        logct_stat="ERROR"
-        logct_err="${logct_err}$(printf "       | %-22s...........$counter Files" "$logct")\n" 
+        logcounter_status="ERROR"
+        logcounter_error="${logcounter_error}$(printf "       | %-22s...........$counter Files" "$logct")\n" 
     fi
 done
 
-if [ "$logct_stat" == "OK" ]; then
+if [ "$logcounter_status" == "OK" ]; then
     echo "       Anzahl Logfiles:.........................OK" >> $file
 else
     echo "       Anzahl Logfiles:......................ERROR" >> $file
-    echo -e "$logct_err" >> $file
+    echo -e "$logcounter_error" >> $file
 fi
 
 # Logfiles size:
 for sizelogs in "${logs[@]}"; do
-    for logfile in $lopa$sizelogs; do
+    for logfile in $logfilepath$sizelogs; do
         if [ -e "$logfile" ]; then
             logsize=$(stat -c %s "$logfile" 2>/dev/null)
             logsize_h=$(du -h "$logfile" 2>/dev/null | awk '{print $1}')
 
             if [ "$logsize" -gt 10485760 ]; then
-                logsi_stat="ERROR"
-                logsi_err="${logsi_err}$(printf "       | %-32s......$logsize_h" "$(basename "$logfile")")\n"
+                logsize_status="ERROR"
+                logsize_error="${logsize_error}$(printf "       | %-32s......$logsize_h" "$(basename "$logfile")")\n"
             fi
         fi
     done
 done
 
-if [ "$logsi_stat" == "OK" ]; then
+if [ "$logsize_status" == "OK" ]; then
     echo "       Groesse Logfiles:........................OK" >> $file
 else
     echo "       Groesse Logfiles:.....................ERROR" >> $file
-    echo -e "$logsi_err" >> $file
+    echo -e "$logsize_error" >> $file
 fi
 
 cat $file
@@ -155,7 +155,7 @@ sync
 mail_content=$(cat $file)
 html_content="<html><body><pre style=\"font-family: 'Lucida Console', 'Consolas', 'Courier New', monospace;\">$mail_content</pre></body></html>"
 
-if [ "$usage" -ge 60 ] || [ "$ws_stat" == "ERROR" ] || [ "$logct_stat" == "ERROR" ] || [ "$logsi_stat" == "ERROR" ]; then
+if [ "$usage" -ge 60 ] || [ "$webservice_status" == "ERROR" ] || [ "$logcounter_status" == "ERROR" ] || [ "$logsize_status" == "ERROR" ]; then
     echo -e "Subject: $server-$countr - ERROR\nContent-Type: text/html\n\n$html_content" | msmtp -a default kevin.wehrli@emilfrey.ch
     echo ""
     echo "                          ERROR"
