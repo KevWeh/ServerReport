@@ -28,7 +28,7 @@ This project is an enhanced version of the [SystemReport](https://github.com/Kev
 |                    | ServerReport                      | SystemReport                          |
 |--------------------|-----------------------------------|---------------------------------------|
 | Check interval:    | every 15 min                      | twice a day                           |
-| Cron job settings: | `15 * * * *`                      | `0 6 * * *` / `0 13 * * *`            |
+| Cron job settings: | `*/15 * * * *`                    | `0 6 * * *` / `0 13 * * *`            |
 | Email report:      | only when an error occurs         | twice a day                           |
 | Report details:    | only faulty entries are displayed | all details are displayed permanently |
 | Check Logfiles:    | Amount and size separately        | Amount and size combined              |
@@ -80,7 +80,7 @@ This project is an enhanced version of the [SystemReport](https://github.com/Kev
 
     Underneath the comment section, add the following entry:
     ```shell
-    15 * * * * /usr/local/bin/serverreport.sh >/dev/null 2>&1
+    */15 * * * * /usr/local/bin/serverreport.sh >/dev/null 2>&1
     ```
 
 ## Usage
