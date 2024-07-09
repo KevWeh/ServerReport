@@ -41,6 +41,7 @@ clear
 #   Webservices + Logfiles:
     asc="ascserver"
     autoi="${asc}_autoi"
+    fordpr="${asc}_fordproxy"
     pl59="${asc}_pl5959"
     pl65="${asc}_pl6565"
     pl69="${asc}_pl6969"
@@ -59,9 +60,9 @@ clear
 
 # Arrays:
 #   Webservices:
-    webservices=(${asc} ${autoi} ${pl59} ${pl65} ${pl69} ${pl70} ${ascw})
+    webservices=(${asc} ${autoi} ${fordpr} ${pl59} ${pl65} ${pl69} ${pl70} ${ascw})
 #   Logfiles:
-    logs=("${asc}.log*" "${autoi}*.log" "${pl59}*.log" "${pl65}*.log" "${pl69}*.log" "${pl70}*.log" "${ascw}*.log")
+    logs=("${asc}.log*" "${autoi}*.log" "${fordpr}*.log" "${pl59}*.log" "${pl65}*.log" "${pl69}*.log" "${pl70}*.log" "${ascw}*.log")
 
 # Creat logfile:
 echo " " > $file
