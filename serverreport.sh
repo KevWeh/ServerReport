@@ -13,32 +13,30 @@
 clear
 
 # Functions:
-#   Empty line:
+#   Function to add an empty line to the output file:
     empty() {
         echo "" >> $file
     }
-#   Spacer:
+#   Function to add a separator line to the output file:
     spacer() {
         echo "##########################################################" >> $file
         echo " " >> $file
     }
-#   Read out % of the current memory utilisation:
+#   Function to get the percentage of current memory utilisation:
     storage() {
         df -h / | awk 'NR==2 {print $5}' | sed 's/%//'
     }
 
 # Variables:
-#   Time + Date:
-    DATES=$(date +%d.%m.%y)
-    TIME=$(date +%H:%M)
-#   Path where output is saved:
-    file=/tmp/serverreport_$DATES.log
-#   Serverinfo:
-    server="CAPLIVE"
-    countr="CH"
-#   Memory utilisation
-    usage=$(storage)
-#   Webservices + Logfiles:
+    DATES=$(date +%d.%m.%y)             # Current date in dd.mm.yy format
+    TIME=$(date +%H:%M)                 # Current time in HH:MM format
+    file=/tmp/serverreport_$DATES.log   # Path where the output is saved
+    server="CAPLIVE"                    # Server name
+    countr="CH"                         # Country code
+    usage=$(storage)                    # Memory utilisation percentage
+    logfilepath=/var/log/asc/           # Log file path
+
+#   Web services and log file names:
     asc="ascserver"
     autoi="${asc}_autoi"
     fordpr="${asc}_fordproxy"
@@ -47,27 +45,23 @@ clear
     pl69="${asc}_pl6969"
     pl70="${asc}_pl7070"
     ascw="ascwatchdog"
-#   Webservice Status:
+
+#   Initial status values:
     webservice_status="OK"
-    webservice_error=""
-#   Logpath:
-    logfilepath=/var/log/asc/
-#   Logfiles Status:
+    webservice_error="" 
     logcounter_status="OK"
     logcounter_error=""
     logsize_status="OK"
     logsize_error=""
 
-# Arrays:
-#   Webservices:
+# Arrays of web services and log files:
     webservices=(${asc} ${autoi} ${fordpr} ${pl59} ${pl65} ${pl69} ${pl70} ${ascw})
-#   Logfiles:
     logs=("${asc}.log*" "${autoi}*.log" "${fordpr}*.log" "${pl59}*.log" "${pl65}*.log" "${pl69}*.log" "${pl70}*.log" "${ascw}*.log")
 
-# Creat logfile:
+# Create the log file:
 echo " " > $file
 
-# Titel:
+# Add the title to the log file:
 cat <<TITLE >> $file
 ##########################################################
 #   ________   ___  __   _____   ______       _______ __ #
@@ -80,11 +74,12 @@ TITLE
 
 empty
 
+# Add the current date and time to the log file:
 echo "                     $DATES - $TIME" >> $file
 
 empty
 
-# Storage (df -h /):
+# Check memory utilisation and add the result to the log file:
 if [ "$usage" -lt 60 ]; then
     echo "       Speicherplatz:.................... $usage% | OK" >> $file
 elif [ "$usage" -ge 60 ] && [ "$usage" -le 80 ]; then
@@ -93,7 +88,7 @@ else
     echo "       Speicherplatz:..............$usage% | CRITICAL!" >> $file
 fi
 
-# Webservices:
+# Check the status of each web service and add the results to the log file:
 for ws in "${webservices[@]}"; do
     status=$(systemctl is-active "$ws")
     if [ "$status" != "active" ]; then
@@ -109,7 +104,7 @@ else
     echo -e "$webservice_error" >> $file
 fi
 
-# Counter Logfiles:
+# Check the number of log files and add the results to the log file:
 for logct in "${logs[@]}"; do
     counter=$(find $logfilepath -name "$logct" | wc -l)
     if [ "$counter" -gt "10" ]; then
@@ -125,7 +120,7 @@ else
     echo -e "$logcounter_error" >> $file
 fi
 
-# Logfiles size:
+# Check the size of each log file and add the results to the log file:
 for sizelogs in "${logs[@]}"; do
     for logfile in $logfilepath$sizelogs; do
         if [ -e "$logfile" ]; then
@@ -147,11 +142,12 @@ else
     echo -e "$logsize_error" >> $file
 fi
 
+# Display the contents of the log file:
 cat $file
 
 sync
 
-# Send email in case of an ERROR:
+# Send an email if there is any error:
 mail_content=$(cat $file)
 html_content="<html><body><pre style=\"font-family: 'Lucida Console', 'Consolas', 'Courier New', monospace;\">$mail_content</pre></body></html>"
 
