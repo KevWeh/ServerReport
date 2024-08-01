@@ -6,7 +6,7 @@
 # Description   :   Script for monitoring critical system parameters on CAPLIVE CH Server
 # Args          :   -
 # Author        :   Kevin Wehrli
-# Email         :   kevin.wehrli@emilfrey.ch
+# Email         :   kevin.wehrli@e*******.ch
 
 ##########################################################################################
 
@@ -152,7 +152,7 @@ mail_content=$(cat $file)
 html_content="<html><body><pre style=\"font-family: 'Lucida Console', 'Consolas', 'Courier New', monospace;\">$mail_content</pre></body></html>"
 
 if [ "$usage" -ge 60 ] || [ "$webservice_status" == "ERROR" ] || [ "$logcounter_status" == "ERROR" ] || [ "$logsize_status" == "ERROR" ]; then
-    echo -e "Subject: $server-$countr - ERROR\nContent-Type: text/html\n\n$html_content" | msmtp -a default kevin.wehrli@emilfrey.ch
+    echo -e "Subject: $server-$countr - ERROR\nContent-Type: text/html\n\n$html_content" | msmtp -a default kevin.wehrli@e*******.ch
     echo ""
     echo "                          ERROR"
     echo ""
